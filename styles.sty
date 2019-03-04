@@ -1,0 +1,36 @@
+%Export this style template
+\ProvidesPackage{styles}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}\hypersetup{%
+	pdfborder = {0 0 0}
+}
+\usepackage{listings}
+\usepackage{xcolor}
+
+
+\renewcommand{\familydefault}{\sfdefault}
+\newcommand{\sectionbreak}{\clearpage}
+
+
+\definecolor{OliveGreen}{cmyk}{0.64,0,0.95,0.40}
+\definecolor{lightlightgray}{gray}{0.9}
+
+
+\lstdefinestyle{sharpc}{
+	language=[Sharp]C,
+	frame=ltrb,
+	rulecolor=\color{black},
+	basicstyle=\ttfamily,
+	keywordstyle=\color{blue},
+	commentstyle=\color{gray},
+	numbers=left,
+	numberstyle=\scriptsize,
+	backgroundcolor=\color{lightlightgray},
+	showspaces=false}
