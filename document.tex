@@ -87,7 +87,95 @@ exec dotnet run
 Ist auch dieser Schritt vollbracht, kann im Control Panel des Projektes zu Deployments $\rightarrow$ Routes navigiert werden. Dort erscheint eine Tabelle, wo der Hostname bereits angegeben ist und womit nun die Asp.Net-Core Applikation vom Internet her erreichbar ist.
 \section{Analyse: OSSM-Definition}
 
+Damit sich jemand als Cloud Computing Provider ausgeben kann, sollten folgende Chrakteristiken erfüllt sein:
+
+\begin{itemize}
+	\item On-demand
+	\item Self-service
+	\item Scalable
+	\item Measurable
+\end{itemize}
+
+In den folgenden Kapiteln erläutern wir, wie Openshift diese umsetzt.
+
+\subsection{On-demand & Self-service}
+
+Auf der Startseite findet man eine Katalog allter möglichen Projekttypen. Nach einem Klick auf den gewünschten Projekttyp erscheint ein Dialog, in welchem die spezifische Konfiguration vorgenommen werden kann. Gleichzeitig wird geprüft, ob die definierte Konfiguration plausibel ist. Ist dies der Fall, kann das Projekt erstellt werden.
+Nach wenigen Sekunden ist das Projekt unter der Rubrik "My Projects" ersichtlich.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{img/os-overview-catalog}
+	\caption{Auswahlkatalog aller möglichen Projekttypen}
+	\label{fig:os-catalog}
+\end{figure}
+
+\begin{figure}%
+    \centering
+    \subfloat[label 1]{{\includegraphics[width=5cm]{img/os-project-setup-1} }}%
+    \qquad
+    \subfloat[label 2]{{\includegraphics[width=5cm]{img/os-project-setup-2} }}%
+    \caption{Setup Dialog}%
+    \label{fig:os-setup}%
+\end{figure}
+
+Die Projektübersicht bietet nebst einigen generellen Informationen die Möglichkeit zum Build und Deployment.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{img/os-project-overview}
+	\caption{Ansicht der Projektübersicht}
+	\label{fig:os-project-overview}
+\end{figure}
+
+\subsection{Scalable}
+
+Die Nutzung von Openshift erfordert, dass man sich für ein Abonnement entscheidet. Nebst den kostenlosen Einführungsangeboten bedarf die langfristige Nutzung das Abonnement "OpenShift Online Pro". Im Standard bekommt man hierfür folgende Ressourcen:
+
+\begin{itemize}
+	\item 10 Projects
+	\item 2 GB Memory
+	\item 2 GB Terminating Memory
+	\item 2 GB Storage
+\end{itemize}
+
+Um mehr als 10 Projekte zu verwalten bedarf es einem neuen Abonnement. Falls mehr Arbeitsspeicher oder Speicher nötig ist, kann das aktuelle Abonnement angepasst werden, was natürlich einen Einfluss auf den Preis hat. Trotzdem gibt es folgende Begrenzungen:
+
+\begin{itemize}
+	\item Arbeitsspeicher: maximal 48 GB
+	\item Speicher: maximal 150 GB
+\end{itemize}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{img/os-scalability}
+	\caption{Verwaltung der Ressourcen eines Abonnements}
+	\label{fig:os-scalability}
+\end{figure}
+
+\subsection{Measurable}
+
+Die aktuelle Nutzung der Ressourcen kann lediglich auf Projektstufe eingesehen werden. Diese Übersicht ist ziemlich einfach gehalten, ledicglich genutzer Arbeitsspeicher und Speicher werden im Verhältnis zum Maximum angezeigt.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{img/os-quota}
+	\caption{Übersicht der genutzten Ressourcen}
+	\label{fig:os-quota}
+\end{figure}
+
 \section{Konzept: Cloud Computing Patterns}
+
+Openshift bietet Entwicklern mit dem Konzept PaaS eine Plattform an, auf welcher eine App relative einfach deployed werden kann. Dies bringt den Vorteil, dass der Entwickler sich nicht mit der Komplexität der Building-/Deploying Infrastruktur auseinandersetzen muss.
+Die Applikation läuft anschliessend auf sogenannten "Pods", welche vergleichbar mit Docker-Container sind. Einerseits kann die Anzahl Pod's pro Projekt manuell festeglegt und geändert werden. Zudem gibt es die Mgölichkeit für Pod Autoscaling. Sobald ein Pod bis zu
+einem gewissen Grad ausgelastet wird, kommt ein zusätzlicher Pod in Aktion, sofern die maximale Anzahl definierter Pod's nicht erreicht wurde.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{img/os-architecture}
+	\caption{Architekturübersicht der Openshift-Plattform}
+	\label{fig:os-architecture}
+\end{figure}
 
 \section{Hands-On: Self Information}
 
