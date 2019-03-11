@@ -201,4 +201,32 @@ einem gewissen Grad ausgelastet wird, kommt ein zusätzlicher Pod in Aktion, sof
 
 \section{Analyse: Preisvergleich eigenes Hosting, IaaS und PaaS}
 
+Mit der geschilderten Ausgangslage wurden folgende Annahmen getroffen:
+
+\begin{itemize}
+	\item Beschaffungskosten eigener Server: 1'000
+	\item Server Administrationskosten pro Jahr: 8'000 (10\% Stelle mit Ansatz 80'000 Jahresgehalt)
+\end{itemize}
+
+Daraus ergibt sich folgende Kostenaufstellung:
+
+\begin{table}[H]
+    \begin{tabular}{| l | l | l | l | l |}
+		\hline
+        Kostenart & Eigener Server & Google & Amazon E2C & Openshift \\ \hline
+        Beschaffung & 1'000 & 3'800 & 3'600 & 12'100\\
+        Betrieb & 16'000 & 4'000 & 4'000 & 4'000\\
+        Total & 17'000 & 7'800 & 7'600 & 16'100 \\ \hline
+    \end{tabular}
+    \caption{Vergleich zwischen lokalen Servern und Cloud Servern}
+\end{table}
+
+Im Vergleich schneiden die beiden grossen Cloud Provider Amazon und Google am besten ab. Mit etwas Interpretation lässt sich jedoch erkennen, dass die totalen Kosten stark abhängig von der Anzahl Servern ist.
+Das heisst, je mehr Server für eine Applikation gebraucht werden, umso mehr lohnt sich die Investition in eine eigene Infrastruktur.
+
+Ein weiterer Aspekt stellt die Vertraulichkeit der Applikationsdaten dar. So erwartet der normale Kunde einer Bank, dass seine Kreditkarteninformationen nicht bei einem Server eines externen Anbieters taummeln.
+
+Generell macht es Sinn, Cloud Provider nach den benötigten Funktionalitäten einzuschränken und erst in einem zweiten Schritt preistechnisch zu optimieren. Eine Herausforderung stellt hierbei der Vergleich der einzelnen Provider dar.
+Oftmals haben unterschiedliche Provider verschieden Angebote mit unterschiedlichen Konfigurationen, was einen Vergleich sinnlos macht.
+
 \end{document}
