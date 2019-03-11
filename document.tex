@@ -12,20 +12,20 @@
 \tableofcontents
 \newpage
 \section{Hands-On: Hello (Cloud) World}
-%TODO Einleitung schreiben mit erklärung wieso, Start Stopp Möglichkeiten, Logfiles, Vorteil/Nachteil ggü Google App Engine
+%TODO Einleitung schreiben mit erklärung wieso, Start Stopp Möglichkeiten, Logfilesls, Vorteil/Nachteil ggü Google App Engine
 \subsection{Installationsanleitung}
-Das Ziel ist es, eine Asp.Net-Core Hello-World Applikation mittels Openshift Online zu builden und deployen. Am Schluss dieser Installationsanleitung sollte dies möglich sein.
+Das Ziel ist es, eine Asp.NET-Core Hello-World Applikation mittels Openshift Online zu builden und deployen. Am Schluss dieser Installationsanleitung sollte dies möglich sein.
 
 
 Für das Einrichten von Openshift Online müssen grob folgende Schritte durchgeführt werden:
 \begin{itemize}
 	\item Account und Projekt auf der Plattform erstellen
-	\item GitHub Repository der Asp.Net-Core Applikation mit Openshift Projekt verbinden
+	\item GitHub Repository der Asp.NET-Core Applikation mit Openshift Projekt verbinden
 	\item Applikation auf Openshift builden
 	\item Applikation auf Openshift deployen
 \end{itemize}
 \subsubsection{Openshift Account erstellen}
-Zuerst muss ein Account auf  \url{https://manage.openshift.com/signin} erstellt werden. Danach kann zwischen den in Abbildung \ref{fig:openshift-plan} vorgeschlagenen Plänen ausgewählt werden. Wir benutzen den Openshift Online Starter Plan.
+Zuerst muss ein Account auf  \url{https://manage.openshift.com/signin} erstellt werden. Danach kann zwischen den in Abbildung \ref{fig:openshift-plan} vorgeschlagenen Plänen ausgewählt werden. Wir benutzen den Openshift Online Pro Plan (30-day trial).
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.7\linewidth]{img/openshift-plan}
@@ -34,20 +34,16 @@ Zuerst muss ein Account auf  \url{https://manage.openshift.com/signin} erstellt 
 \end{figure}
 
 Dass der Account verifiziert werden kann, muss eine Telefonnummer hinterlegt werden, auf welche darauffolgend einen Bestätigungscode zugeschickt wird. 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.7\linewidth]{img/os-phone-validation}
-	\caption{Telefon Verifikation}
-	\label{fig:os-phone-validation}
-\end{figure}
+
 Wurde diese eingegeben und verifiziert, erscheint eine Übersicht über das bestellte Produkt wie in Abbildung \ref{fig:os-overview} angezeigt. Daraufhin kann die Subscription bestätigt werden.
-\begin{figure}[h]
+
+\begin{figure}
 	\centering
 	\includegraphics[width=0.9\linewidth]{img/os-overview}
 	\caption{Übersicht des abgeschlossenen Plans}
 	\label{fig:os-overview}
 \end{figure}
-Kurz nach dem Bestätigen sollte ein Bestätigungsmail eintreffen. Nach dem Bestätigen dieser kann bereits die Web Console geöffnet werden. Es wird ein Katalog mit allen Produkten von Openshift Online dargestellt (Abbildung \ref{fig:os-overview-catalog}).
+Kurz nach dem Bestätigen sollte ein Bestätigungsmail eintreffen. Darauffolgend kann bereits die Web Console geöffnet werden. Es wird ein Katalog mit allen Produkten von Openshift Online dargestellt (Abbildung \ref{fig:os-overview-catalog}).
 
 \begin{figure}[h]
 	\centering
@@ -55,9 +51,9 @@ Kurz nach dem Bestätigen sollte ein Bestätigungsmail eintreffen. Nach dem Best
 	\caption{Katalog von Openshift}
 	\label{fig:os-overview-catalog}
 \end{figure}
-Das Erstellen des Openshift Accounts ist somit abgeschlossen und die Plattform ist für das Builden und Deployen von Applikationen bereit. 
-\subsubsection{Erstellen, Builden und Deployment der Applikation}
-In der Web-Console können wir nun auf .NET Core Projekt clicken. Daraufhin erscheint ein Wizard, dem wir Schritt für Schritt folgen können. Falls das GitHub-Repository schon während dem Wizard hinzugefügt werden soll, muss es bereits existieren und sichtbar sein. 
+Das Erstellen des Openshift Accounts ist somit abgeschlossen und die Platt\-form ist für das Builden und Deployen von Applikationen bereit. 
+\subsubsection{Erstellen, Builden und Deployment der Applikation mit dem Web-UI}
+In der Web-Console können wir nun auf .NET Core Projekt klicken. Daraufhin erscheint ein Wizard, dem wir Schritt für Schritt folgen können. Falls das GitHub-Repository schon während dem Wizard hinzugefügt werden soll, muss es bereits existieren und sichtbar sein. 
 
 Entsprechende Felder müssen gemäss Abbildung \ref{fig:os-new-config} ausgefüllt sein. Vorsicht ist bei der .NET Version geboten; wir verwenden die Version 2.2 von .NET Core. 
 \begin{figure}[h]
@@ -71,20 +67,41 @@ Sobald das Projekt in Openshift erstellt wurde, startet der Build.
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.7\linewidth]{img/os-building}
-	\caption{Builden der .net core Applikation}
+	\caption{Builden der .NET core Applikation}
 	\label{fig:os-building}
 \end{figure}
 Womöglich schlägt der Build aufgrund von fehlender \texttt{.s2i}-Konfiguration (Source-2-Image) fehl. Um diesen Fehler zu beheben, muss Openshift gesagt werden, wo das Startup-Projekt liegt. Dazu muss ein Ordner und File mit dem Namen \texttt{.s2i/environment} erstellt werden. Dies beinhaltet folgendes:
 \begin{lstlisting}[breaklines=true]
 DOTNET_STARTUP_PROJECT=HelloWorld-netcore/HelloWorld-netcore.csproj
 \end{lstlisting}
-Wichtig ist weiter zu beachten, dass die .net Versionen (dotnet sowie NuGet-Pakete) mit denjenigen von Openshift Cloud kompatibel sind. 
+Wichtig ist weiter zu beachten, dass die .NET Versionen (.NET sowie NuGet-Pakete) mit denjenigen von Openshift Cloud kompatibel sind. 
 
 War der Build erfolgreich, muss noch das Deployment konfiguriert werden. Dazu kommt ein weiteres File mit dem Namen \texttt{run} ins \texttt{.s2i} Verzeichnis. Darin muss die Applikation noch gestartet werden. Dies funktioniert so:
 \begin{lstlisting}
 exec dotnet run
 \end{lstlisting}
-Ist auch dieser Schritt vollbracht, kann im Control Panel des Projektes zu Deployments $\rightarrow$ Routes navigiert werden. Dort erscheint eine Tabelle, wo der Hostname bereits angegeben ist und womit nun die Asp.Net-Core Applikation vom Internet her erreichbar ist.
+Ist auch dieser Schritt vollbracht, kann im Control Panel des Projektes zu Deployments $\rightarrow$ Routes navigiert werden. Dort erscheint eine Tabelle, wo der Hostname bereits angegeben ist und womit nun die Asp.NET-Core Applikation vom Internet her erreichbar ist.
+
+
+
+\subsubsection{Vorarbeit - Installation der Openshift CLI}
+Neben dem Web-UI besteht ähnlich wie mit GAE die Möglichkeit, ein Konsolentool für das Konfigurieren der Cloud Projekte zu verwenden. Die Installation des Tools stellte auf Ubuntu 18.04 LTS einige Probleme dar, wie im Folgenden beschrieben wird. 
+
+Beim Ausführen der Konsolenapplikation \texttt{oc}, auf die in der Doku \footnote{\url{https://docs.openshift.com/online/getting_started/basic_walkthrough.html}} verwiesen wird, kam der Fehler in Abbildung \ref{fig:oc-error} auf.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\linewidth]{img/oc-error}
+	\caption{Fehler beim Ausführen des OC}
+	\label{fig:oc-error}
+\end{figure}
+Gemäss einem Issue auf GitHub\footnote{\url{https://github.com/openshift/origin/issues/21061}} handelt es sich um einen fehlerhaften Symlink, der in dieser spezifischen Version enthalten war. Es wird des Weiteren auf eine aktueller Version verwiesen, mit welcher das Problem nicht mehr existiert. Openshift garantiert nur für RHEL\footnote{Red Hat Enterprise Linux} Support, weshalb auf anderen Linux Distributionen oder Betriebssystemen mit solchen Fehlern gerechnet werden muss.
+
+Nachdem die Installation des CLI vollbracht ist, können die gleichen Befehle des Web-UIs in der Konsole ausgeführt werden. 
+\begin{description}
+	\item[Erstellen eines Projektes] \hfill\\
+	\texttt{oc new-project helloWorld --display-name='ASP.NET Core Hello World'}
+\end{description}
 \section{Analyse: OSSM-Definition}
 
 Damit sich jemand als Cloud Computing Provider ausgeben kann, sollten folgende Chrakteristiken erfüllt sein:
@@ -178,6 +195,7 @@ einem gewissen Grad ausgelastet wird, kommt ein zusätzlicher Pod in Aktion, sof
 \end{figure}
 
 \section{Hands-On: Self Information}
+
 
 \section{Analyse: Preisrecherche}
 
