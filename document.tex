@@ -12,15 +12,18 @@
 \tableofcontents
 \newpage
 \section{Hands-On: Hello (Cloud) World}
+Dieses Kapitel befasst sich mit der ersten Erfahrung mit dem gewählten Cloud Provider: Openshift online. 
+
+Die Wahl ist nach einer kurzen Recherche auf Openshift gefallen, weil die ausgedachten Kriterien (Verknüpfung mit GitHub Repository, Push auf Repo führt zu Redeploy und .NET Core und Java Spring Kompatibiltät) mit dem ersten Eindruck effizient vollbracht werden können. 
 %TODO Einleitung schreiben mit erklärung wieso, Start Stopp Möglichkeiten, Logfilesls, Vorteil/Nachteil ggü Google App Engine
 \subsection{Installationsanleitung}
-Das Ziel ist es, eine Asp.NET-Core Hello-World Applikation mittels Openshift Online zu builden und deployen. Am Schluss dieser Installationsanleitung sollte dies möglich sein.
+Das Ziel ist es, eine ASP.NET-Core Hello-World Applikation mittels Openshift Online zu builden und deployen. Am Schluss dieser Installationsanleitung sollte dies möglich sein.
 
 
-Für das Einrichten von Openshift Online müssen grob folgende Schritte durchgeführt werden:
+Für das Deplyoment dieser Applikation auf der Openshift Online Plattform müssen grob folgende Schritte durchgeführt werden:
 \begin{itemize}
 	\item Account und Projekt auf der Plattform erstellen
-	\item GitHub Repository der Asp.NET-Core Applikation mit Openshift Projekt verbinden
+	\item GitHub Repository der ASP.NET-Core Applikation mit Openshift Projekt verbinden
 	\item Applikation auf Openshift builden
 	\item Applikation auf Openshift deployen
 \end{itemize}
@@ -52,7 +55,9 @@ Kurz nach dem Bestätigen sollte ein Bestätigungsmail eintreffen. Darauffolgend
 	\label{fig:os-overview-catalog}
 \end{figure}
 Das Erstellen des Openshift Accounts ist somit abgeschlossen und die Platt\-form ist für das Builden und Deployen von Applikationen bereit. 
-\subsubsection{Erstellen, Builden und Deployment der Applikation mit dem Web-UI}
+
+
+\subsubsection{Build und Deployment der Applikation mit dem Web-UI}\label{sec:net-webui}
 In der Web-Console können wir nun auf .NET Core Projekt klicken. Daraufhin erscheint ein Wizard, dem wir Schritt für Schritt folgen können. Falls das GitHub-Repository schon während dem Wizard hinzugefügt werden soll, muss es bereits existieren und sichtbar sein. 
 
 Entsprechende Felder müssen gemäss Abbildung \ref{fig:os-new-config} ausgefüllt sein. Vorsicht ist bei der .NET Version geboten; wir verwenden die Version 2.2 von .NET Core. 
@@ -70,22 +75,22 @@ Sobald das Projekt in Openshift erstellt wurde, startet der Build.
 	\caption{Builden der .NET core Applikation}
 	\label{fig:os-building}
 \end{figure}
-Womöglich schlägt der Build aufgrund von fehlender \texttt{.s2i}-Konfiguration (Source-2-Image) fehl. Um diesen Fehler zu beheben, muss Openshift gesagt werden, wo das Startup-Projekt liegt. Dazu muss ein Ordner und File mit dem Namen \texttt{.s2i/environment} erstellt werden. Dies beinhaltet folgendes:
+Womöglich schlägt der Build aufgrund fehlender \texttt{.s2i}-Konfiguration (Source-2-Image) fehl. Um diesen Fehler zu beheben, muss Openshift gesagt werden, wo das Startup-Projekt liegt. Dazu muss ein Ordner und File mit dem Namen \texttt{.s2i/environment} erstellt werden. Dieses beinhaltet folgendes:
 \begin{lstlisting}[breaklines=true]
 DOTNET_STARTUP_PROJECT=HelloWorld-netcore/HelloWorld-netcore.csproj
 \end{lstlisting}
-Wichtig ist weiter zu beachten, dass die .NET Versionen (.NET sowie NuGet-Pakete) mit denjenigen von Openshift Cloud kompatibel sind. 
+Wichtig ist weiter zu beachten, dass die .NET Versionen (.NET sowie NuGet-Pakete) mit denjenigen von Openshift kompatibel sind. 
 
 War der Build erfolgreich, muss noch das Deployment konfiguriert werden. Dazu kommt ein weiteres File mit dem Namen \texttt{run} ins \texttt{.s2i} Verzeichnis. Darin muss die Applikation noch gestartet werden. Dies funktioniert so:
 \begin{lstlisting}
 exec dotnet run
 \end{lstlisting}
-Ist auch dieser Schritt vollbracht, kann im Control Panel des Projektes zu Deployments $\rightarrow$ Routes navigiert werden. Dort erscheint eine Tabelle, wo der Hostname bereits angegeben ist und womit nun die Asp.NET-Core Applikation vom Internet her erreichbar ist.
+Ist auch dieser Schritt vollbracht und der Build erfolgreich, kann im Control Panel des Projektes zu Deployments $\rightarrow$ Routes navigiert werden. Dort erscheint eine Tabelle, wo der Hostname bereits angegeben ist und womit nun die ASP.NET-Core Applikation vom Internet her erreichbar ist.
 
 
 
-\subsubsection{Vorarbeit - Installation der Openshift CLI}
-Neben dem Web-UI besteht ähnlich wie mit GAE die Möglichkeit, ein Konsolentool für das Konfigurieren der Cloud Projekte zu verwenden. Die Installation des Tools stellte auf Ubuntu 18.04 LTS einige Probleme dar, wie im Folgenden beschrieben wird. 
+\subsubsection{Installation der Openshift CLI}
+Neben dem Web-UI besteht ähnlich wie mit GAE die Möglichkeit, ein Konsolentool für das Konfigurieren der Cloud Projekte zu verwenden. Die Installation des Tools stellte auf Ubuntu 18.04 LTS ein Problem dar, wie im Folgenden beschrieben wird. 
 
 Beim Ausführen der Konsolenapplikation \texttt{oc}, auf die in der Doku \footnote{\url{https://docs.openshift.com/online/getting_started/basic_walkthrough.html}} verwiesen wird, kam der Fehler in Abbildung \ref{fig:oc-error} auf.
 
@@ -95,12 +100,17 @@ Beim Ausführen der Konsolenapplikation \texttt{oc}, auf die in der Doku \footno
 	\caption{Fehler beim Ausführen des OC}
 	\label{fig:oc-error}
 \end{figure}
+
 Gemäss einem Issue auf GitHub\footnote{\url{https://github.com/openshift/origin/issues/21061}} handelt es sich um einen fehlerhaften Symlink, der in dieser spezifischen Version enthalten war. Es wird des Weiteren auf eine aktueller Version verwiesen, mit welcher das Problem nicht mehr existiert. Openshift garantiert nur für RHEL\footnote{Red Hat Enterprise Linux} Support, weshalb auf anderen Linux Distributionen oder Betriebssystemen mit solchen Fehlern gerechnet werden muss.
+
+
+\subsubsection{Build und Deployment der Applikation mit dem CLI}
 
 Nachdem die Installation des CLI vollbracht ist, können die gleichen Befehle des Web-UIs in der Konsole ausgeführt werden. 
 \begin{description}
 	\item[Erstellen eines Projektes] \hfill\\
 	\texttt{oc new-project helloWorld --display-name='ASP.NET Core Hello World'}
+	\item[]
 \end{description}
 \section{Analyse: OSSM-Definition}
 
@@ -195,9 +205,40 @@ einem gewissen Grad ausgelastet wird, kommt ein zusätzlicher Pod in Aktion, sof
 \end{figure}
 
 \section{Hands-On: Self Information}
+Für das Deployment der gegebenen Self-Information Spring Applikation sind ähnliche Schritte wie schon bei der ASP.NET Core Applikation notwendig. Da es sich um eine Java Applikation handelt, muss auf jedenfall eine JVM auf dem Zielrechner existieren. Der Applikationserver Wildfly bietet eine gute Umgebung inklusive JVM (Oracle), auf welcher unsere Applikation ausgeführt wird. 
+
+\subsection{Vorgehen}
+Analog zu Kapitel \ref{sec:net-webui} muss zuerst ein Projekt erstellt werden. Wie erwähnt wählen wir hier aber ein Wildfly-Projekt. Nachdem die nötigen Informationen ausgefüllt wurden, muss das Projekt mit dem GitHub Repository verknüpft werden. Optional kann ein Webhook konfiguriert werden, mit welchem der CI/CD-Prozess nach einem Push auf das Repository automatisch angestossen wird. 
+
+Nach dem Erstellen und Verknüpfen des Projektes wird der initale Build und das Deployment automatisch getriggered. Ohne weitere Konfiguration für Openshift wird nun ein Wildfly Applikationsserver aufgezogen und gestartet. Wir jetzt Openshift so konfigurieren, dass das Jar-File vom Build der Spring Applikation ausgeführt und geroutet wird. Dazu reicht ein \texttt{run} File im Ordner \texttt{.s2i/bin} mit folgendem Inhalt:
+\begin{lstlisting}[breaklines=true]
+exec java -jar /wildfly/standalone/deployments/self-information-0.0.1-SNAPSHOT.jar
+\end{lstlisting}
+Mit diesem Befehl wird nach dem Aufziehen des Applikationsserver die Spring Applikation gestartet. Anstelle des absoluten Pfades wäre es denkbar, den Pfad des Jar-Files in eine Openshift-Umgebungsvariable zu speichern. 
+
+Nach diesen Schritten sollte die Spring Applikation erfolgreich deployt sein. Im Web-UI kann die URL unter 'Application Console' $\rightarrow$ 'Applications' $\rightarrow$ 'Routes' $\rightarrow$ 'Hostname' gefunden werden. 
+
+\subsection{Zusatzinformationen}
+In der Standardkonfiguration des Pro-Abonnements von Openshift Cloud sind bis zu 2 GiB RAM sowie 10 GiB Storage enthalten. Die Self-Information Applikation verbraucht davon ca. 260MiB RAM verteilt auf 2 Pods. Gemäss der laufenden Applikation ist die IP 10.129.29.151.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\linewidth]{img/self-information}
+	\caption{Self-Information Screenshot}
+	\label{fig:self-information}
+\end{figure}
 
 
 \section{Analyse: Preisrecherche}
+%TODO Welche Preismodelle stehen zur Verfügung (Bsp. Subscription, Flat Rate, Pay-per-Use)?
+%Wie kann bezahlt werden (Kreditkarte, Rechnung, ...)?
+%Gibt es ein Gratis-Angebot für Einsteiger (falls ja: was sind %die Einschränkungen)?
+%Welche Ressourcen werden abgerechnet?
+%Was kostet Sie das Hosting der Anwendung aus der Ausgangslage?
+%Vergleichen Sie das im vorherigen Schritt gefundene Angebot mit Amazon Web Services
+%(AWS) Elastic Compute Cloud (EC2) anhand des AWS-Preiskalkulators. 3
+%Welche Schwierigkeiten treten bei den Vergleich auf (z.B. unterschiedliche Servicemodelle
+%oder Qualitätseigenschaften, versteckte Kosten, widersprüchliche Angaben)?
 
 Openshift bietet dem Endnutzer nur einige wenige Möglichkeiten am, um ihre Dienste nutzen zu können. Für die geschilderte Ausgangslage bedarf es einer Subskription für den Plan Openshift Online Pro mit zusätzlichen Ressourcen. Openshift bietet in ihrem Standard des
 Pro Plans lediglich 2 GB RAM und 2 GB Speicher zur Verfügung. Der Erwerb der zusätzlichen Ressourcen führt zu einem monatlichen Kostenpunkt von 118 Dollar. Nebst RAM und Speicher werden terminierter Speicher (welcher nur temporär z.B. für das Builden gebraucht wird)
