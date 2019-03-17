@@ -3,6 +3,7 @@
 
 \lstset{style=sharpc, tabsize=1}
 
+\renewcommand{\sectionbreak}{\clearpage}
 
 \author{Alexander van Schie \& Oli Dias}
 \title{Gruppenarbeit 1 - Cloud Fundamentals beim Provider}
@@ -139,10 +140,9 @@ Nach wenigen Sekunden ist das Projekt unter der Rubrik "My Projects" ersichtlich
 
 \begin{figure}%
     \centering
-    \subfloat[label 1]{{\includegraphics[width=5cm]{img/os-project-setup-1} }}%
+    \subfloat[Setup Dialog Schritt 1]{{\includegraphics[width=5cm]{img/os-project-setup-1} }}%
     \qquad
-    \subfloat[label 2]{{\includegraphics[width=5cm]{img/os-project-setup-2} }}%
-    \caption{Setup Dialog}%
+    \subfloat[Setup Dialog Schritt 2]{{\includegraphics[width=5cm]{img/os-project-setup-2} }}
     \label{fig:os-setup}%
 \end{figure}
 
@@ -210,7 +210,7 @@ Für das Deployment der gegebenen Self-Information Spring Applikation sind ähnl
 \subsection{Vorgehen}
 Analog zu Kapitel \ref{sec:net-webui} muss zuerst ein Projekt erstellt werden. Wie erwähnt wählen wir hier aber ein Wildfly-Projekt. Nachdem die nötigen Informationen ausgefüllt wurden, muss das Projekt mit dem GitHub Repository verknüpft werden. Optional kann ein Webhook konfiguriert werden, mit welchem der CI/CD-Prozess nach einem Push auf das Repository automatisch angestossen wird. 
 
-Nach dem Erstellen und Verknüpfen des Projektes wird der initale Build und das Deployment automatisch getriggered. Ohne weitere Konfiguration für Openshift wird nun ein Wildfly Applikationsserver aufgezogen und gestartet. Wir jetzt Openshift so konfigurieren, dass das Jar-File vom Build der Spring Applikation ausgeführt und geroutet wird. Dazu reicht ein \texttt{run} File im Ordner \texttt{.s2i/bin} mit folgendem Inhalt:
+Nach dem Erstellen und Verknüpfen des Projektes wird der initale Build und das Deployment automatisch getriggered. Ohne weitere Konfiguration für Openshift wird nun ein Wildfly Applikationsserver aufgezogen und gestartet. Wir müssen jetzt Openshift so konfigurieren, dass das Jar-File vom Build der Spring Applikation ausgeführt und geroutet wird. Dazu reicht ein \texttt{run} File im Ordner \texttt{.s2i/bin} mit folgendem Inhalt:
 \begin{lstlisting}[breaklines=true]
 exec java -jar /wildfly/standalone/deployments/self-information-0.0.1-SNAPSHOT.jar
 \end{lstlisting}
