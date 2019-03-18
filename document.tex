@@ -13,7 +13,7 @@
 \tableofcontents
 \newpage
 \section{Hands-On: Hello (Cloud) World}
-Dieses Kapitel befasst sich mit der ersten Erfahrung mit dem gewählten Cloud Provider: Openshift online. 
+Dieses Kapitel befasst sich mit der ersten Erfahrung mit dem gewählten Cloud Provider: Openshift Online. 
 
 Die Wahl ist nach einer kurzen Recherche auf Openshift gefallen, weil die ausgedachten Kriterien (Verknüpfung mit GitHub Repository, Push auf Repo führt zu Redeploy und .NET Core und Java Spring Kompatibiltät) mit dem ersten Eindruck effizient vollbracht werden können. 
 %TODO Einleitung schreiben mit erklärung wieso, Start Stopp Möglichkeiten, Logfilesls, Vorteil/Nachteil ggü Google App Engine
@@ -73,14 +73,14 @@ Sobald das Projekt in Openshift erstellt wurde, startet der Build.
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.7\linewidth]{img/os-building}
-	\caption{Builden der .NET core Applikation}
+	\caption{Builden der .NET Core Applikation}
 	\label{fig:os-building}
 \end{figure}
 Womöglich schlägt der Build aufgrund fehlender \texttt{.s2i}-Konfiguration (Source-2-Image) fehl. Um diesen Fehler zu beheben, muss Openshift gesagt werden, wo das Startup-Projekt liegt. Dazu muss ein Ordner und File mit dem Namen \texttt{.s2i/environment} erstellt werden. Dieses beinhaltet folgendes:
 \begin{lstlisting}[breaklines=true]
 DOTNET_STARTUP_PROJECT=HelloWorld-netcore/HelloWorld-netcore.csproj
 \end{lstlisting}
-Wichtig ist weiter zu beachten, dass die .NET Versionen (.NET sowie NuGet-Pakete) mit denjenigen von Openshift kompatibel sind. 
+Wichtig ist weiter zu beachten, dass die .NET Version mit derjenigen von Openshift kompatibel ist.
 
 War der Build erfolgreich, muss noch das Deployment konfiguriert werden. Dazu kommt ein weiteres File mit dem Namen \texttt{run} ins \texttt{.s2i} Verzeichnis. Darin muss die Applikation noch gestartet werden. Dies funktioniert so:
 \begin{lstlisting}
