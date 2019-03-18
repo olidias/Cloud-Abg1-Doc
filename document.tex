@@ -240,17 +240,21 @@ In der Standardkonfiguration des Pro-Abonnements von Openshift Cloud sind bis zu
 %Welche Schwierigkeiten treten bei den Vergleich auf (z.B. unterschiedliche Servicemodelle
 %oder Qualitätseigenschaften, versteckte Kosten, widersprüchliche Angaben)?
 
+\subsection{Preismodelle}
 Openshift bietet dem Endnutzer nur einige wenige Möglichkeiten am, um ihre Dienste nutzen zu können. Für die geschilderte Ausgangslage bedarf es einer Subskription für den Plan Openshift Online Pro mit zusätzlichen Ressourcen. Openshift bietet in ihrem Standard des
 Pro Plans lediglich 2 GB RAM und 2 GB Speicher zur Verfügung. Der Erwerb der zusätzlichen Ressourcen führt zu einem monatlichen Kostenpunkt von 118 Dollar. Nebst RAM und Speicher werden terminierter Speicher (welcher nur temporär z.B. für das Builden gebraucht wird)
 und Support als Ressourcen erworben werden.
 
+\subsection{Zahlungsmöglichkeiten}
 Der Rechnungsbetrag kann lediglich mit Kreditkarte beglichen werden, welche beim Kauf hinterlegt werden muss. Um sich lediglich ein Bild der Plattform machen zu können bietet Openshift kostenlos einen 30-tägigen Testzugang an.
 
+\subsection{Vergleich Amazon EC2}
 Vergleichsweise lässt sich bei Amazon ein Rechner mit ähnlichen Konfigurationen für jährlich 990 Dollar mieten, was ziemlich nahe dem monatlichen Preis von Openshift kommt. Die Schwierigkeit des Vergleichs besteht darin, dass sich die Angebot vieler Provider unterscheiden.
 Bei Openshift hat man die Freiheit, die Ressourcen sehr genau selbst definieren zu können, wogleich bei Amazon vordefinierte Pakete von Rechner geschnürt wurden.
 
 \section{Analyse: Preisvergleich eigenes Hosting, IaaS und PaaS}
 
+\subsection{Kostenaufstellung}
 Mit der geschilderten Ausgangslage wurden folgende Annahmen getroffen:
 
 \begin{itemize}
@@ -271,12 +275,13 @@ Daraus ergibt sich folgende Kostenaufstellung:
     \caption{Vergleich zwischen lokalen Servern und Cloud Servern}
 \end{table}
 
+\subsection{Fazit}
 Im Vergleich schneiden die beiden grossen Cloud Provider Amazon und Google am besten ab. Mit etwas Interpretation lässt sich jedoch erkennen, dass die totalen Kosten stark abhängig von der Anzahl Servern ist.
 Das heisst, je mehr Server für eine Applikation gebraucht werden, umso mehr lohnt sich die Investition in eine eigene Infrastruktur.
 
 Ein weiterer Aspekt stellt die Vertraulichkeit der Applikationsdaten dar. So erwartet der normale Kunde einer Bank, dass seine Kreditkarteninformationen nicht bei einem Server eines externen Anbieters taummeln.
 
 Generell macht es Sinn, Cloud Provider nach den benötigten Funktionalitäten einzuschränken und erst in einem zweiten Schritt preistechnisch zu optimieren. Eine Herausforderung stellt hierbei der Vergleich der einzelnen Provider dar.
-Oftmals haben unterschiedliche Provider verschieden Angebote mit unterschiedlichen Konfigurationen, was einen Vergleich sinnlos macht.
+Oftmals haben unterschiedliche Provider verschieden Angebote mit unterschiedlichen Konfigurationen, was einen direkten Vergleich erschwert.
 
 \end{document}
