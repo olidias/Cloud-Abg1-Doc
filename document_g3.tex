@@ -1,0 +1,25 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{styles}
+
+\lstset{style=sharpc, tabsize=1}
+
+\renewcommand{\sectionbreak}{\clearpage}
+
+\author{Alexander van Schie \& Oli Dias}
+\title{Gruppenarbeit 3 - Abschliessende Analyse des Providers und Cloud Application Design}
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+\section{Analyse Service Level Agreegment (SLA)}
+\begin{itemize}
+    \item 1. Es wird eine etwas andere Art von SLO’s gemacht, nämlich wird das Problem nach Schwerheitsgrad klassifiziert und je schlimmer es ist, desto schneller muss RedHat reagieren (https://access.redhat.com/support/offerings/openshift/sla)
+    \item 2.
+    \item 3. Generell werden keine Metriken oder Messwerte erwähnt. Vielmehr werden Probleme zusammengefasst und nach Schwerheitsgrad klassifiziert. (https://www.openshift.com/legal/terms/)
+    \item 4. Je nach SLA müssen verschieden Dinge eingehalten werden. Was mir persönlich als wichtig erscheint ist eine Vereinbarung bezüglich dem Kundensupport innerhalb einer gewissen Zeit da (a) ein Unterbruch meiner Applikation je nachdem grosse Konsequenzen für mein Unternehmen haben kann. Grundsätzlich sollte ein Cloud-Provider ausgewählt werden, der quasi to big to fail ist (b).
+    \item 5. Je nach Branch muss man sich mit den Datenschutzbestimmungen des Cloud Providers auseinander setzen. Beispielsweise wäre es für Banken nicht gerade ideal, Kundendaten auf ausländische Server zu migrieren/verwalten
+\end{itemize}
+
+
+\end{document}
