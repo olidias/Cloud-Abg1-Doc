@@ -5,6 +5,16 @@
 
 \renewcommand{\sectionbreak}{\clearpage}
 
+\usepackage{polyglossia}
+\usepackage{fontspec}
+\usepackage{times}
+\usepackage{tikz}
+\usetikzlibrary{matrix, positioning,calc}
+\newcommand{\texta}{Stärken\\[-1ex]}
+\newcommand{\textb}{Schwächen\\[-1ex]}
+\newcommand{\textcn}{Chancen\\[-1ex]}
+\newcommand{\textdn}{Risiken\\[-1ex]}
+
 \author{Alexander van Schie \& Oli Dias}
 \title{Gruppenarbeit 3 - Abschliessende Analyse des Providers und Cloud Application Design}
 \begin{document}
@@ -21,5 +31,137 @@
     \item 5. Je nach Branch muss man sich mit den Datenschutzbestimmungen des Cloud Providers auseinander setzen. Beispielsweise wäre es für Banken nicht gerade ideal, Kundendaten auf ausländische Server zu migrieren/verwalten
 \end{itemize}
 
+\section{Twelve-Factor Apps}
+    \begin{table}[]
+        \begin{tabular}{ll}
+        \multicolumn{2}{l}{Engineering Projekt (Waitless)} \\
+        Erfüllt               & Nicht erfüllt              \\
+        Codebase              & Disposability              \\
+        Dependencies          & Dev/prod parity            \\
+        Config                & Logs                       \\
+        Backing services      & Admin processes            \\
+        Build, release, run   &                            \\
+        Processes             &                            \\
+        Port binding          &                            \\
+        Concurrency           &                            \\
+        Port binding          &                            \\
+        \end{tabular}
+    \end{table}
+
+\subsection{Anpassungen}
+    \begin{itemize}
+        \item Disposability:
+        \item Dev/prod parity: Die ganze Applikation wurde nur auf einem System entwickelt. Sobald Code eingecheckt und die Tests
+              erfolgreich waren, war der Code bereits produktiv.
+        \item Logs: Das Verhalten der Applikation wurde mit Enduser-Tests überprüft. Mit der Implementation von Logs werden alle
+              Informationen festgehalten.
+        \item Admin processes:
+    \end{itemize}
+
+\section{Security Features und Assessment}
+
+In den Terms und Conditions von Openshift ist ganz klar zu entnehmen, dass der Anwedender für Themen des Datenschutzes die Verantwortung übernimmt.
+So hat der Anwender sicherzustellen, dass die Daten der Anwender seiner Applikation geschützt werden. Dies beinhaltet die Implementation von
+Datnschutzrichtlinien, welche rechtlich abgestimmt sind. Zudem müssen die Anwender darüber informiert werden, dass ihre Daten auf der Infrstruktur
+von Red Hat abgelegt wird und sie dem somit zustimmen.
+
+Red Hat gibt bekannt, dass folgende Technologien von ihrem PaaS unterstützt werden:
+
+\begin{itemize}
+    \item SELinux
+    \item Process, network, and storage separation
+    \item Stateful and stateless inspection firewall
+    \item Proactive monitoring of capacity limits
+    \item Intrusion detection
+    \item Port monitoring
+    \item Pam namespace
+    \item Security compliance frameworks
+    \item RPM verification and vulnerabilities updated
+    \item Remote logging
+    \item Encrypted communications
+\end{itemize}
+https://www.openshift.com/policy/security/
+
+\subsection{Checkliste Security Assessment}
+
+1. Encrypted Communication/ (Security) -> 10
+Openshift nutzt Kubernetes und die Kommunikation bei Kubernetes ist standardmässig mit TLS verschlüsselt.
+2. Backups -> 3
+Backups müssen selbst gemacht werden, es gibt hierfür keinen Service. Positive ist jedoch, dass das Vorgehen dokumentiert ist.
+3. Location -> 5
+Openshift wird vermutlich Data Centers an mehreren geographischen Standorten haben, kommuniziert dies jedoch nicht öffentlich.
+4. Server Redundancy (Data Centre Physical Security, Disaster Tolerance) -> 8
+Da Openshift mit Kubernetes arbeitet, besteht auch die Möglichkeit der Nutzung von Replicas, diese müssen jedoch selbst definiert werden.
+5. Service Authentification (for Administration stuff) -> 10
+Authentifizierungserfahren laufen über OAuth und bietet alle gängigen Möglichkeiten (https://docs.openshift.com/enterprise/3.0/admin_guide/configuring_authentication.html)
+6. Appropriate SLA (with Incident Handling) -> 7
+Es gibt ein SLA, in dem wichtige Punkte zur Einhaltung der Servicebedingungen festgehalten sind. Was jedoch nicht zu entnehmen ist, sind Strafen, die bei Nichteinhaltung fällig werden.
+7. Data Isolation (Customer based, Data Integrity)
+Kubernetes NetworkPolicy wird voll unterstützt und Projekte können ebenfalls in einer isolierten Umgebung betrieben werden.
+8. Transparency (Monitoring) -> 8
+Quotas sowie laufende Prozesse können eingesehen werden
+9. Network design & Logging -> 5
+Standardmässig werden Logs geschrieben, diese waren unserer Erfahrungen nach unzureichend (was das Fehlerhandling erschwerte)
+
+http://02f9c3b.netsolhost.com/blog1/wp-content/uploads/Cloudsecurity.pdf
+https://www.fujitsu.com/sg/Images/cloud-security-checklist.pdf
+https://www.krypsys.com/cloud-security/cloud-security-checklist/
+https://brage.bibsys.no/xmlui/bitstream/handle/11250/2378820/A27131.pdf?sequence=3&isAllowed=y
+
+\section{SWOT-Assessment von Cloud Provider und Cloud Offering}
+
+\begin{tikzpicture}[font=\small,
+        any/.style={draw, text width=.5\linewidth-1cm, align=center,               anchor=center, inner sep=5pt},
+        row 1/.style={nodes={any, minimum height=1cm, fill=black!10}},
+        row 2/.style={nodes={any, minimum height=9cm}},
+        row 3/.style={nodes={any, minimum height=8cm}},
+        row 2 column 1/.style={nodes={any, minimum height=1cm, fill=black!10, rotate=90, minimum width=9cm}},
+        row 3 column 1/.style={nodes={any, minimum height=1cm, fill=black!10, rotate=90, minimum width=8cm}}
+    ]
+    \matrix (SWOT) [matrix of nodes, inner sep=0pt,
+    column sep=-1\pgflinewidth,
+    row sep=-1\pgflinewidth,
+    inner sep=0pt]
+    {
+     & {\texta} & {\textb} \\
+     {\textcn} & \begin{itemize}
+        \item Web App Design
+        \item Einfache Projektinitialisierung
+        \item Command Line Interface (CLI)
+    \end{itemize} &\begin{itemize}
+        \item Limitierte Ressourcen
+        \item Limitierete Projektauswahl
+        \item Limitierte Abonnemente
+        \item Preis
+        \item Web App Struktur ?
+    \end{itemize} \\
+     {\textdn} & \begin{itemize}
+        \item Nutzung von Kubernetes
+        \item Ausbaubare Service Dokumentation
+        \item Chance zur Änderung (Nicht to big to change)
+    \end{itemize} & \begin{itemize}
+        \item Transparenz Fehlerbehandlung
+        \item Transparenz Nutzungsbedingungen
+        \item Ablehnung jeglicher Sicherheitsaspekte
+        \item Kleine Community
+    \end{itemize} \\
+    };
+    \node[below right =1mm of SWOT.south west] {S indicates standardization ongoing activities};
+    \draw[fill=black!10] ($(SWOT-1-2.north west)+(\pgflinewidth/2,-\pgflinewidth/2)$) rectangle ($(SWOT-1-3.north east)+(-\pgflinewidth/2,-\pgflinewidth/2+1cm)$)
+        node[midway] {Interne Analyse};
+    \draw[fill=black!10] ($(SWOT-3-1.north west)+(-1cm+\pgflinewidth/2,\pgflinewidth/2)$) rectangle ($(SWOT-2-1.north east)+(\pgflinewidth/2, -\pgflinewidth/2)$)
+        node[midway, rotate=90] {Externe Analyse};
+    \end{tikzpicture}
+
+\section{Provider Evaluation Checkliste}
+
+Kriterium & Erfüllt & Kommentar
+- Umfangreicher Technologiekatalog & Jein & Welches Angebot stellt uns der Anbieter zur Verfügung.
+- Unternehmungsgrösse des Anbieters & Nein & Grosse Unternehmen haben tendenziel mehr Erfahrung als Cloud Anbieter
+- Customizing & Jein & Ist es möglich, Ressourcen nach beliebigem Bedarf zu skalieren?
+- Dokumentation & Ja &
+- Community & Nein & Gibt es eine Community, die bei häufigen Problemen helfen kann?
+
+\section{Management Summary}
 
 \end{document}
