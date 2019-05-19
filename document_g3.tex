@@ -83,30 +83,41 @@ Red Hat gibt bekannt, dass folgende Technologien von ihrem PaaS unterstützt wer
 https://www.openshift.com/policy/security/
 
 \subsection{Checkliste Security Assessment}
-
 1. Encrypted Communication/ (Security) -> 10
 Openshift nutzt Kubernetes und die Kommunikation bei Kubernetes ist standardmässig mit TLS verschlüsselt.
+
+
 2. Backups -> 3
 Backups müssen selbst gemacht werden, es gibt hierfür keinen Service. Positive ist jedoch, dass das Vorgehen dokumentiert ist.
+
+
 3. Location -> 5
 Openshift wird vermutlich Data Centers an mehreren geographischen Standorten haben, kommuniziert dies jedoch nicht öffentlich.
+
+
 4. Server Redundancy (Data Centre Physical Security, Disaster Tolerance) -> 8
 Da Openshift mit Kubernetes arbeitet, besteht auch die Möglichkeit der Nutzung von Replicas, diese müssen jedoch selbst definiert werden.
+
+
 5. Service Authentification (for Administration stuff) -> 10
-Authentifizierungserfahren laufen über OAuth und bietet alle gängigen Möglichkeiten (https://docs.openshift.com/enterprise/3.0/admin_guide/configuring_authentication.html)
+Authentifizierungserfahren laufen über OAuth und bietet alle gängigen Möglichkeiten (\url{https://docs.openshift.com/enterprise/3.0/admin_guide/configuring_authentication.html})
+
+
 6. Appropriate SLA (with Incident Handling) -> 7
 Es gibt ein SLA, in dem wichtige Punkte zur Einhaltung der Servicebedingungen festgehalten sind. Was jedoch nicht zu entnehmen ist, sind Strafen, die bei Nichteinhaltung fällig werden.
+
+
 7. Data Isolation (Customer based, Data Integrity)
 Kubernetes NetworkPolicy wird voll unterstützt und Projekte können ebenfalls in einer isolierten Umgebung betrieben werden.
+
+
 8. Transparency (Monitoring) -> 8
 Quotas sowie laufende Prozesse können eingesehen werden
-9. Network design & Logging -> 5
+
+
+9. Network design und Logging -> 5
 Standardmässig werden Logs geschrieben, diese waren unserer Erfahrungen nach unzureichend (was das Fehlerhandling erschwerte)
 
-http://02f9c3b.netsolhost.com/blog1/wp-content/uploads/Cloudsecurity.pdf
-https://www.fujitsu.com/sg/Images/cloud-security-checklist.pdf
-https://www.krypsys.com/cloud-security/cloud-security-checklist/
-https://brage.bibsys.no/xmlui/bitstream/handle/11250/2378820/A27131.pdf?sequence=3&isAllowed=y
 
 \section{SWOT-Assessment von Cloud Provider und Cloud Offering}
 
@@ -154,13 +165,16 @@ https://brage.bibsys.no/xmlui/bitstream/handle/11250/2378820/A27131.pdf?sequence
     \end{tikzpicture}
 
 \section{Provider Evaluation Checkliste}
-
-Kriterium & Erfüllt & Kommentar
-- Umfangreicher Technologiekatalog & Jein & Welches Angebot stellt uns der Anbieter zur Verfügung.
-- Unternehmungsgrösse des Anbieters & Nein & Grosse Unternehmen haben tendenziel mehr Erfahrung als Cloud Anbieter
-- Customizing & Jein & Ist es möglich, Ressourcen nach beliebigem Bedarf zu skalieren?
-- Dokumentation & Ja &
-- Community & Nein & Gibt es eine Community, die bei häufigen Problemen helfen kann?
+    \begin{table}[]
+        \begin{tabular}{lll}
+            Kriterium & Erfüllt & Kommentar                                                                                 \\
+            Umfangreicher Technologiekatalog & Jein & Welches Angebot stellt uns der Anbieter zur Verfügung.                \\
+            Unternehmungsgrösse des Anbieters & Nein & Grosse Unternehmen haben tendenziel mehr Erfahrung als Cloud Anbieter\\
+            Customizing & Jein & Ist es möglich, Ressourcen nach beliebigem Bedarf zu skalieren?                            \\
+            Dokumentation & Ja &                                                                                            \\
+            Community & Nein & Gibt es eine Community, die bei häufigen Problemen helfen kann?                              \\
+        \end{tabular}
+    \end{table}
 
 \section{Management Summary}
 
