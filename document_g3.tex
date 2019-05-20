@@ -5,11 +5,6 @@
 
 \renewcommand{\sectionbreak}{\clearpage}
 
-\usepackage{polyglossia}
-\usepackage{fontspec}
-\usepackage{times}
-\usepackage{tikz}
-\usetikzlibrary{matrix, positioning,calc}
 \newcommand{\texta}{Stärken\\[-1ex]}
 \newcommand{\textb}{Schwächen\\[-1ex]}
 \newcommand{\textcn}{Chancen\\[-1ex]}
@@ -31,8 +26,70 @@
     \item 5. Je nach Branch muss man sich mit den Datenschutzbestimmungen des Cloud Providers auseinander setzen. Beispielsweise wäre es für Banken nicht gerade ideal, Kundendaten auf ausländische Server zu migrieren/verwalten
 \end{itemize}
 
+\section{Hands-On Lakeside Mutual}
+Die zu deployenden Komponenten lassen sich in zwei Kategorien einteilen; Frontend und Backend. Das Setup der beiden Teile des Backends werden im nachfolgenden Unterkapitel besprochen, das Frontend im Unterkapitel \ref{subsec:frontend}. 
+
+\subsection{Spring Boot Backend Setup}
+Für das Migrieren des Backends der Lakeside Mutual DDD Applikation eignet sich für die beiden Komponenten Customer-Core und Customer-Management-Backend ein Wildfly Projekt auf Openshift. Dies sollte analog wie schon beim Deployment der Self-Information Applikation funktionieren, da alle drei Applikationen Spring Boot verwenden. 
+
+Dazu sind folgende Schritte notwendig:
+\begin{enumerate}
+	\item Hinzufügen der \texttt{.s2i/bin/run} Datei in beiden Spring Boot Apps, die den Befehl für das Ausführen des gebuildeten Jar Files enthält:
+	\begin{lstlisting}
+	exec java -jar /wildfly/standalone/deployments/
+	 customer-management-backend-0.0.1-SNAPSHOT.jar
+	\end{lstlisting}
+	\item Anpassen der Application-Properties in Customer-Management-Backend: 
+	\begin{itemize}
+		\item Property \texttt{customercore.baseURL} auf die URL des Customer Cores einstellen. Diese ist sichtbar gemäss Abbildung \ref{fig:os-routes} in Openshift Cloud herauszufinden. 
+		\item Property \texttt{server.port} aus derselben Übersicht auslesen und setzen (Default 8080)
+	\end{itemize}
+	\item Anpassen der Application-Properties in Customer-Core:
+	\begin{itemize}
+		\item Property \texttt{server.port} setzen (Default 8080)
+	\end{itemize}
+\end{enumerate}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\linewidth]{img/os-routes}
+	\caption{Navigation zu Routes}
+	\label{fig:os-routes}
+\end{figure}
+
+Da Customer-Management-Backend von der Komponente Customer-Core abhängig ist, muss Customer-Core zuerst deployt werden. Ansonsten wirft die Applikation eine Laufzeit-Exception, da keine Verbindung zum Core hergestellt werden kann. 
+
+\subsection{Frontend Deployment}\label{subsec:frontend}
+Openshift bietet Node.js Projekte an, welches sich für die React App eignet. 
+
+Nachdem das Nodejs-Projekt erstellt und das GitHub-Repository erstellt ist, beginnt ein zuständiger Pod gleich mit dem Build. Unglücklicherweise wurde mit unserem Setup an dieser Stelle der Build unterbrochen aufgrund von Limiten, die unsere Subscription setzt. Da das Frontend aber von beiden anderen Komponenten abhängig ist, bleibt uns nichts anderes übrig, als die Frontend-Komponente lokal auszuführen. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\linewidth]{img/os-frontend-build-fail}
+	\caption{Build-Failure aufgrund von Memory-Limiten}
+	\label{fig:os-frontend-build-fail}
+\end{figure}
+
+Für die lokale Ausführung wird Nodejs benötigt. Ist dies installiert, ist noch eine zusätzliche Konfiguration nötig: Wir müssen auf das Management-Backend zugreifen können und dafür die URL anpassen. Wie im vorgehenden Kapitel schon erwähnt, findet man den URL des Management-Backends in dessen Projekt auf Openshift unter Applications $\rightarrow$ Routes. Die URL muss im File \texttt{src/config.js} angepasst werden:
+\begin{lstlisting}[showstringspaces=false]
+export const customerManagementBackend =
+ getEnvironmentVariable(
+  "REACT_APP_CUSTOMER_MANAGEMENT_BACKEND",
+  "http://customer-management-backend.e4ff.
+    pro-eu-west-1.openshiftapps.com/"
+)
+\end{lstlisting}
+Sind diese Schritte durchgeführt, kann die WebApp mit \texttt{npm start} ausgeführt werden. Es sollte automatisch der Browser mit dem Frontend aufgerufen werden. 
+
+Mit dem erläuterten Setup hat das Frontend wie gewünscht funktioniert, sogar mit dem Chat, dessen History nach einem Neustart immernoch vorhanden war. 
+
+\subsection{Herausforderungen}
+\section{Hands-On Persistence}
+
+
 \section{Twelve-Factor Apps}
-    \begin{table}[]
+    \begin{table}[h]
         \begin{tabular}{ll}
         \multicolumn{2}{l}{Engineering Projekt (Waitless)} \\
         Erfüllt               & Nicht erfüllt              \\
