@@ -41,7 +41,7 @@ Dazu sind folgende Schritte notwendig:
 	\end{lstlisting}
 	\item Anpassen der Application-Properties in Customer-Management-Backend: 
 	\begin{itemize}
-		\item Property \texttt{customercore.baseURL} auf die URL des Customer Cores einstellen. Diese ist sichtbar gemäss Abbildung \ref{fig:os-routes} in Openshift Cloud herauszufinden. 
+		\item Property \texttt{customercore.baseURL} auf die URL des Customer Cores einstellen. Diese ist gemäss Abbildung \ref{fig:os-routes} in Openshift Cloud herauszufinden. 
 		\item Property \texttt{server.port} aus derselben Übersicht auslesen und setzen (Default 8080)
 	\end{itemize}
 	\item Anpassen der Application-Properties in Customer-Core:
@@ -59,6 +59,8 @@ Dazu sind folgende Schritte notwendig:
 
 Da Customer-Management-Backend von der Komponente Customer-Core abhängig ist, muss Customer-Core zuerst deployt werden. Ansonsten wirft die Applikation eine Laufzeit-Exception, da keine Verbindung zum Core hergestellt werden kann. 
 
+Mit dem beschriebenen Setup trafen wir auf eine Hürde: eine \texttt{Request\-Rejected\-Exception}, welche das Ausführen verhinderte. Dazu mehr im Kapitel \ref{subsec:challenges}
+
 \subsection{Frontend Deployment}\label{subsec:frontend}
 Openshift bietet Node.js Projekte an, welches sich für die React App eignet. 
 
@@ -66,12 +68,12 @@ Nachdem das Nodejs-Projekt erstellt und das GitHub-Repository erstellt ist, begi
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=1\linewidth]{img/os-frontend-build-fail}
+	\includegraphics[width=1\linewidth,height=2cm]{img/os-frontend-build-fail}
 	\caption{Build-Failure aufgrund von Memory-Limiten}
 	\label{fig:os-frontend-build-fail}
 \end{figure}
 
-Für die lokale Ausführung wird Nodejs benötigt. Ist dies installiert, ist noch eine zusätzliche Konfiguration nötig: Wir müssen auf das Management-Backend zugreifen können und dafür die URL anpassen. Wie im vorgehenden Kapitel schon erwähnt, findet man den URL des Management-Backends in dessen Projekt auf Openshift unter Applications $\rightarrow$ Routes. Die URL muss im File \texttt{src/config.js} angepasst werden:
+Für die lokale Ausführung wird Node.js benötigt. Ist dies installiert, ist noch eine zusätzliche Konfiguration nötig: Wir müssen auf das Management-Backend zugreifen können und dafür die URL anpassen. Wie im vorgehenden Kapitel schon erwähnt, findet man den URL des Management-Backends in dessen Projekt auf Openshift unter Applications $\rightarrow$ Routes. Die URL muss im File \texttt{src/config.js} angepasst werden:
 \begin{lstlisting}[showstringspaces=false]
 export const customerManagementBackend =
  getEnvironmentVariable(
@@ -84,7 +86,20 @@ Sind diese Schritte durchgeführt, kann die WebApp mit \texttt{npm start} ausgef
 
 Mit dem erläuterten Setup hat das Frontend wie gewünscht funktioniert, sogar mit dem Chat, dessen History nach einem Neustart immernoch vorhanden war. 
 
-\subsection{Herausforderungen}
+\subsection{Herausforderungen}\label{subsec:challenges}
+
+Es stellte sich beim Deployment dieser drei Komponenten ein grösseres Problem: eine \texttt{RequestRejectedException}, die von Spring-Security entstand. Quelle dieser Exception ist die \texttt{HttpFirewall} von Spring. Diese verhindert, dass URLs mit Doppelslash aufgerufen werden können mit der Begründung, dass solche URLs von Pattern Matching nicht korrekt prozessiert werden könnten oder Pfad-Traversierungen möglich wären \footnote{\url{https://docs.spring.io/spring-security/site/docs/5.0.0.RELEASE/reference/htmlsingle/\#request-matching}}. 
+
+Um dieses Problem zu umgehen, kann ein neues Bean erstellt werden, dass eine \texttt{DefaultHttpFirewall} zurückgibt, die die erläuterte Überprüfung nicht macht. Folgende Methode wurde der Klasse \texttt{Web\-Security\-Configuration.java} hinzugefügt:
+
+\begin{lstlisting}
+@Bean
+public HttpFirewall allowUrlEncodedSlashHttpFirewall(){
+	return new DefaultHttpFirewall();
+}
+\end{lstlisting}
+Durch das Erstellen eines Beans mit Rückgabetyp \texttt{HttpFirewall} verwendet Spring dieses und überschreibt somit das unerwünschte Verhalten. Mit diesem Work-around läuft nun das Customer-Management-Backend wie gewünscht.
+
 \section{Hands-On Persistence}
 
 
