@@ -20,10 +20,10 @@
 \section{Analyse Service Level Agreegment (SLA)}
 \begin{itemize}
     \item 1. Es wird eine etwas andere Art von SLO’s gemacht, nämlich wird das Problem nach Schwerheitsgrad klassifiziert und je schlimmer es ist, desto schneller muss RedHat reagieren (https://access.redhat.com/support/offerings/openshift/sla)
-    \item 2.
+    \item 2. Openshift gibt in seinem SLA bekannt, dass keine Garantien für Service Uptime besteht. Ebenfalls besteht keine Garantie für Performance. Somit basieren die Service Erbringungen auf gegenseitiges Vertrauen. Dem Kunden werden somit bei jeglichen unzureichenden Serviceleistungen kein Kredit oder Guthaben gewährt.
     \item 3. Generell werden keine Metriken oder Messwerte erwähnt. Vielmehr werden Probleme zusammengefasst und nach Schwerheitsgrad klassifiziert. (https://www.openshift.com/legal/terms/)
     \item 4. Je nach SLA müssen verschieden Dinge eingehalten werden. Was mir persönlich als wichtig erscheint ist eine Vereinbarung bezüglich dem Kundensupport innerhalb einer gewissen Zeit da (a) ein Unterbruch meiner Applikation je nachdem grosse Konsequenzen für mein Unternehmen haben kann. Grundsätzlich sollte ein Cloud-Provider ausgewählt werden, der quasi to big to fail ist (b).
-    \item 5. Je nach Branch muss man sich mit den Datenschutzbestimmungen des Cloud Providers auseinander setzen. Beispielsweise wäre es für Banken nicht gerade ideal, Kundendaten auf ausländische Server zu migrieren/verwalten
+    \item 5. Je nach Branche muss man sich mit den Datenschutzbestimmungen des Cloud Providers auseinander setzen. Beispielsweise wäre es für Banken nicht gerade ideal, Kundendaten auf ausländische Server zu migrieren/verwalten. Generell muss man sich als Kunde eines Cloud Anbieters selbst um die zu treffenden Sicherheitsvorkehrungen bezüglich Daten kümmern.
 \end{itemize}
 
 \section{Hands-On Lakeside Mutual}
@@ -88,32 +88,44 @@ Mit dem erläuterten Setup hat das Frontend wie gewünscht funktioniert, sogar m
 \section{Hands-On Persistence}
 
 
-\section{Twelve-Factor Apps}
-    \begin{table}[h]
+\section{Twelve-Factor Apps - Engineering Projekt}
+    \begin{table}[H]
         \begin{tabular}{ll}
-        \multicolumn{2}{l}{Engineering Projekt (Waitless)} \\
-        Erfüllt               & Nicht erfüllt              \\
-        Codebase              & Disposability              \\
-        Dependencies          & Dev/prod parity            \\
-        Config                & Logs                       \\
-        Backing services      & Admin processes            \\
+        \hline
+        \textbf{Erfüllt}      & \textbf{Nicht erfüllt}     \\ \hline
+        Codebase              & Dev/prod parity            \\ \hline
+        Dependencies          & Logs                       \\
+        Config                &                            \\
+        Backing services      &                            \\
         Build, release, run   &                            \\
         Processes             &                            \\
         Port binding          &                            \\
         Concurrency           &                            \\
         Port binding          &                            \\
+        Disposability         &                            \\
+        Admin processes       &                            \\ \hline
         \end{tabular}
     \end{table}
 
 \subsection{Anpassungen}
     \begin{itemize}
-        \item Disposability:
         \item Dev/prod parity: Die ganze Applikation wurde nur auf einem System entwickelt. Sobald Code eingecheckt und die Tests
-              erfolgreich waren, war der Code bereits produktiv.
-        \item Logs: Das Verhalten der Applikation wurde mit Enduser-Tests überprüft. Mit der Implementation von Logs werden alle
-              Informationen festgehalten.
-        \item Admin processes:
+              erfolgreich waren, war der Code bereits produktiv. Die Anpassung lautete somit mehrere Umgebungen gleichzeitig zu
+              unterhalten.
+        \item Logs: Das Verhalten der Applikation wurde mit Enduser-Tests überprüft. Die Anpasssung beinhaltet somit die Erfassung
+              von Logs bei der Interaktion mit unserer Applikation.
     \end{itemize}
+
+\subsection{Unterschied zu IDEAL Architektur}
+
+Die Twelve-Factor Apps Methode gibt dem Leser konkrete Konzepte, wie gewissen Dinge umgesetzt werden sollen. Die IDEAL Cloud Application
+Properties hingegen sind auf einer höheren Ebene angesiedelt und geben mehr vor, mit welchen Patterns die jeweilige Eigenschaft erfüllt werden kann.
+Somit werden die 12 Schritte bereits mit einem Pattern, welches von IDEAL vorgeschlagen wird, umgesetzt. Wie auch in den Vorlesungsfolien zu entnhemen ist,
+sind die 12 Schritte im Einklang mit IDEAL.
+
+\subsection{Fazit}
+Abschliessend lässt sich die Twelve-Factor Apps Methode einfacher realisieren, da die Schritte als Checkliste verwendet werden können.
+Hierzu sind die IDEAL-Properties auf einem zu hohen Level definiert.
 
 \section{Security Features und Assessment}
 
@@ -140,41 +152,43 @@ Red Hat gibt bekannt, dass folgende Technologien von ihrem PaaS unterstützt wer
 https://www.openshift.com/policy/security/
 
 \subsection{Checkliste Security Assessment}
-1. Encrypted Communication/ (Security) -> 10
-Openshift nutzt Kubernetes und die Kommunikation bei Kubernetes ist standardmässig mit TLS verschlüsselt.
 
 
-2. Backups -> 3
-Backups müssen selbst gemacht werden, es gibt hierfür keinen Service. Positive ist jedoch, dass das Vorgehen dokumentiert ist.
+\begin{table}[H]
+    \begin{tabular}{lr}
+    \hline
+    \textbf{Anforderung}                   & \textbf{Erfüllungsgrad} \\ \hline
+    1. Encrypted Communication             & 10                      \\
+    2. Backups                             & 3                       \\
+    3. Location                            & 7                       \\
+    4. Server Redundancy                   & 8                       \\
+    5. Service Authentification            & 10                      \\
+    6. Appropriate SLA                     & 7                       \\
+    7. Data Isolation                      & 10                      \\
+    8. Transparency (Monitoring)           & 8                       \\
+    9. Network Design und Logging          & 6                       \\ \hline
+    \end{tabular}
+\end{table}
 
+\subsubsection{Bemerkungen}
 
-3. Location -> 5
-Openshift wird vermutlich Data Centers an mehreren geographischen Standorten haben, kommuniziert dies jedoch nicht öffentlich.
+1. Openshift nutzt Kubernetes und die Kommunikation bei Kubernetes ist standardmässig mit TLS verschlüsselt.
 
+2. Backups müssen selbst gemacht werden, es gibt hierfür keinen Service. Positive ist jedoch, dass das Vorgehen dokumentiert ist.
 
-4. Server Redundancy (Data Centre Physical Security, Disaster Tolerance) -> 8
-Da Openshift mit Kubernetes arbeitet, besteht auch die Möglichkeit der Nutzung von Replicas, diese müssen jedoch selbst definiert werden.
+3. Openshift wird vermutlich Data Centers an mehreren geographischen Standorten haben, kommuniziert dies jedoch nicht öffentlich.
 
+4. Da Openshift mit Kubernetes arbeitet, besteht auch die Möglichkeit der Nutzung von Replicas, diese müssen jedoch selbst definiert werden.
 
-5. Service Authentification (for Administration stuff) -> 10
-Authentifizierungserfahren laufen über OAuth und bietet alle gängigen Möglichkeiten (\url{https://docs.openshift.com/enterprise/3.0/admin_guide/configuring_authentication.html})
+5. Authentifizierungserfahren laufen über OAuth und bietet alle gängigen Möglichkeiten (\url{https://docs.openshift.com/enterprise/3.0/admin_guide/configuring_authentication.html})
 
+6. Es gibt ein SLA, in dem wichtige Punkte zur Einhaltung der Servicebedingungen festgehalten sind. Was jedoch nicht zu entnehmen ist, sind Strafen, die bei Nichteinhaltung fällig werden.
 
-6. Appropriate SLA (with Incident Handling) -> 7
-Es gibt ein SLA, in dem wichtige Punkte zur Einhaltung der Servicebedingungen festgehalten sind. Was jedoch nicht zu entnehmen ist, sind Strafen, die bei Nichteinhaltung fällig werden.
+7. Kubernetes NetworkPolicy wird voll unterstützt und Projekte können ebenfalls in einer isolierten Umgebung betrieben werden.
 
+8. Quotas sowie laufende Prozesse können eingesehen werden
 
-7. Data Isolation (Customer based, Data Integrity)
-Kubernetes NetworkPolicy wird voll unterstützt und Projekte können ebenfalls in einer isolierten Umgebung betrieben werden.
-
-
-8. Transparency (Monitoring) -> 8
-Quotas sowie laufende Prozesse können eingesehen werden
-
-
-9. Network design und Logging -> 5
-Standardmässig werden Logs geschrieben, diese waren unserer Erfahrungen nach unzureichend (was das Fehlerhandling erschwerte)
-
+9. Standardmässig werden Logs geschrieben, diese waren unserer Erfahrungen nach unzureichend (was das Fehlerhandling erschwerte)
 
 \section{SWOT-Assessment von Cloud Provider und Cloud Offering}
 
@@ -201,7 +215,7 @@ Standardmässig werden Logs geschrieben, diese waren unserer Erfahrungen nach un
         \item Limitierete Projektauswahl
         \item Limitierte Abonnemente
         \item Preis
-        \item Web App Struktur ?
+        \item Fehlende Service Garantie
     \end{itemize} \\
      {\textdn} & \begin{itemize}
         \item Nutzung von Kubernetes
@@ -214,7 +228,6 @@ Standardmässig werden Logs geschrieben, diese waren unserer Erfahrungen nach un
         \item Kleine Community
     \end{itemize} \\
     };
-    \node[below right =1mm of SWOT.south west] {S indicates standardization ongoing activities};
     \draw[fill=black!10] ($(SWOT-1-2.north west)+(\pgflinewidth/2,-\pgflinewidth/2)$) rectangle ($(SWOT-1-3.north east)+(-\pgflinewidth/2,-\pgflinewidth/2+1cm)$)
         node[midway] {Interne Analyse};
     \draw[fill=black!10] ($(SWOT-3-1.north west)+(-1cm+\pgflinewidth/2,\pgflinewidth/2)$) rectangle ($(SWOT-2-1.north east)+(\pgflinewidth/2, -\pgflinewidth/2)$)
@@ -222,25 +235,57 @@ Standardmässig werden Logs geschrieben, diese waren unserer Erfahrungen nach un
     \end{tikzpicture}
 
 \section{Provider Evaluation Checkliste}
-    \begin{table}[]
+    \begin{table}[H]
         \begin{tabular}{lll}
-            Kriterium & Erfüllt & Kommentar                                                                                 \\
-            Umfangreicher Technologiekatalog & Jein & Welches Angebot stellt uns der Anbieter zur Verfügung.                \\
-            Unternehmungsgrösse des Anbieters & Nein & Grosse Unternehmen haben tendenziel mehr Erfahrung als Cloud Anbieter\\
-            Customizing & Jein & Ist es möglich, Ressourcen nach beliebigem Bedarf zu skalieren?                            \\
-            Dokumentation & Ja &                                                                                            \\
-            Community & Nein & Gibt es eine Community, die bei häufigen Problemen helfen kann?                              \\
+            \hline
+            \textbf{Kriterium}  & \textbf{Erfüllt}                    \\ \hline
+            1. Umfangreicher Technologiekatalog     & Jein            \\
+            2. Unternehmungsgrösse des Anbieters    & Nein            \\
+            3. Customizing                          & Jein            \\
+            4. Dokumentation                        & Ja              \\
+            5. Community                            & Nein            \\
+            6. Support                              & Ja              \\
+            7. OSSM                                 & Ja              \\
+            8. Globale Data Center                  & Jein            \\
+            9. Preis                                & Nein            \\
+            10. Usability                           & Ja              \\ \hline
         \end{tabular}
     \end{table}
+
+\subsection{Kommentare}
+
+1. Welches Angebot stellt uns der Anbieter zur Verfügung.
+
+2. Grosse Unternehmen haben tendenziel mehr Erfahrung als Cloud Anbieter.
+
+3. Bedingt durch das Angebot PaaS ist customizing nur bedingt möglich.
+
+4. Eine ausführliche Dokumentation zu den Funktionalitäten ist hier zu finden: \url{https://docs.openshift.com/container-platform/3.11/welcome/index.html}
+
+5. Obwohl die Openshift Community ständig wächst, wird man bei spezifischen Problemen in der Community nicht fündig
+
+6. Wird angeboten. Je nach Abonnement ändert sich die Antwortzeit bei Incidents.
+
+7. Bereits im ersten Teil besprochen.
+
+8. Zwar besitzt Openshift rund um den Globus Data Center, je nach Applikation und Standort gibt es hierbei jedoch bessere Alternativen.
+
+9. Openshift eignet sich (aus preislicher Perspektive) für den Unterhalt von grösseren Applikationen, welche ressourcenlastig sind.
+
+10. Unserer Ansicht nach war das Arbeiten mit der Webkonsole sehr angenehm.
 
 \section{Management Summary}
 
 Openshift bietet eine gute Möglichkeit, kleinere Container basierte Applikationen in die Cloud zu bringen. Aus der Sicht des Entwicklers
-    ist es ratsam, bereits einige Erfahrungen mit Cloudprojekten gemacht zu haben. Zudem ist ein Basiswissen bezüglich Kubernetes gefordert.
-    Generell ist es zu empfehlen, bereits im Vorhinein die Kompatibilität der Applikation in der Openshift Container Plattform zu prüfen.
-    Anderst als bei den grossen Cloud Anbietern hält sich die Community klein und bei einer sehr spezifischen Applikation wird der Deploymentprozess
-    erheblich erschwert.
+ist es ratsam, bereits einige Erfahrungen mit Cloudprojekten gemacht zu haben. Zudem ist ein Basiswissen bezüglich Kubernetes gefordert.
+Generell ist es zu empfehlen, bereits im Vorhinein die Kompatibilität der Applikation in der Openshift Container Plattform zu prüfen.
+Anderst als bei den grossen Cloud Anbietern hält sich die Community klein und bei einer sehr spezifischen Applikation wird der Deploymentprozess
+erheblich erschwert. Als Kunde muss man sich zudem bewusst sein, dass Openshift keinerlei Garantie für die Erbringung der Uptime gewährleistet.
+Ebenfalls werden Anträge bezüglich unzureichender Performance seitens Openshift abgelehnt.
 
+
+Zusammenfassend erweist sich Openshift interessant für Projekte, welche einen gewissen Risikospielraum zulassen. Bei grösseren Applikationen oder
+Zeit-/Sicherheitskritischen Applikationen empfiehlt sich eine direkte Kontaktaufnahme mit Openshift, um Unklarheiten zu klären.
     
 
 \end{document}
