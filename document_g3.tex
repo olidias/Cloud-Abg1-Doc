@@ -41,7 +41,7 @@ Dazu sind folgende Schritte notwendig:
 	\end{lstlisting}
 	\item Anpassen der Application-Properties in Customer-Management-Backend: 
 	\begin{itemize}
-		\item Property \texttt{customercore.baseURL} auf die URL des Customer Cores einstellen. Diese ist sichtbar gemäss Abbildung \ref{fig:os-routes} in Openshift Cloud herauszufinden. 
+		\item Property \texttt{customercore.baseURL} auf die URL des Customer Cores einstellen. Diese ist gemäss Abbildung \ref{fig:os-routes} in Openshift Cloud herauszufinden. 
 		\item Property \texttt{server.port} aus derselben Übersicht auslesen und setzen (Default 8080)
 	\end{itemize}
 	\item Anpassen der Application-Properties in Customer-Core:
@@ -59,6 +59,8 @@ Dazu sind folgende Schritte notwendig:
 
 Da Customer-Management-Backend von der Komponente Customer-Core abhängig ist, muss Customer-Core zuerst deployt werden. Ansonsten wirft die Applikation eine Laufzeit-Exception, da keine Verbindung zum Core hergestellt werden kann. 
 
+Mit dem beschriebenen Setup trafen wir auf eine Hürde: eine \texttt{Request\-Rejected\-Exception}, welche das Ausführen verhinderte. Dazu mehr im Kapitel \ref{subsec:challenges}
+
 \subsection{Frontend Deployment}\label{subsec:frontend}
 Openshift bietet Node.js Projekte an, welches sich für die React App eignet. 
 
@@ -66,12 +68,12 @@ Nachdem das Nodejs-Projekt erstellt und das GitHub-Repository erstellt ist, begi
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=1\linewidth]{img/os-frontend-build-fail}
+	\includegraphics[width=1\linewidth,height=2cm]{img/os-frontend-build-fail}
 	\caption{Build-Failure aufgrund von Memory-Limiten}
 	\label{fig:os-frontend-build-fail}
 \end{figure}
 
-Für die lokale Ausführung wird Nodejs benötigt. Ist dies installiert, ist noch eine zusätzliche Konfiguration nötig: Wir müssen auf das Management-Backend zugreifen können und dafür die URL anpassen. Wie im vorgehenden Kapitel schon erwähnt, findet man den URL des Management-Backends in dessen Projekt auf Openshift unter Applications $\rightarrow$ Routes. Die URL muss im File \texttt{src/config.js} angepasst werden:
+Für die lokale Ausführung wird Node.js benötigt. Ist dies installiert, ist noch eine zusätzliche Konfiguration nötig: Wir müssen auf das Management-Backend zugreifen können und dafür die URL anpassen. Wie im vorgehenden Kapitel schon erwähnt, findet man den URL des Management-Backends in dessen Projekt auf Openshift unter Applications $\rightarrow$ Routes. Die URL muss im File \texttt{src/config.js} angepasst werden:
 \begin{lstlisting}[showstringspaces=false]
 export const customerManagementBackend =
  getEnvironmentVariable(
@@ -84,8 +86,60 @@ Sind diese Schritte durchgeführt, kann die WebApp mit \texttt{npm start} ausgef
 
 Mit dem erläuterten Setup hat das Frontend wie gewünscht funktioniert, sogar mit dem Chat, dessen History nach einem Neustart immernoch vorhanden war. 
 
-\subsection{Herausforderungen}
+\subsection{Herausforderungen}\label{subsec:challenges}
+
+Es stellte sich beim Deployment dieser drei Komponenten ein grösseres Problem: eine \texttt{RequestRejectedException}, die von Spring-Security entstand. Quelle dieser Exception ist die \texttt{HttpFirewall} von Spring. Diese verhindert, dass URLs mit Doppelslash aufgerufen werden können mit der Begründung, dass solche URLs von Pattern Matching nicht korrekt prozessiert werden könnten oder Pfad-Traversierungen möglich wären \footnote{\url{https://docs.spring.io/spring-security/site/docs/5.0.0.RELEASE/reference/htmlsingle/\#request-matching}}. 
+
+Um dieses Problem zu umgehen, kann ein neues Bean erstellt werden, dass eine \texttt{DefaultHttpFirewall} zurückgibt, die die erläuterte Überprüfung nicht macht. Folgende Methode wurde der Klasse \texttt{Web\-Security\-Configuration.java} hinzugefügt:
+
+\begin{lstlisting}
+@Bean
+public HttpFirewall allowUrlEncodedSlashHttpFirewall(){
+	return new DefaultHttpFirewall();
+}
+\end{lstlisting}
+Durch das Erstellen eines Beans mit Rückgabetyp \texttt{HttpFirewall} verwendet Spring dieses und überschreibt somit das unerwünschte Verhalten. Mit diesem Work-around läuft nun das Customer-Management-Backend wie gewünscht.
+
 \section{Hands-On Persistence}
+In diesem Kapitel geht es darum, die bestehende In-Memory-Datenbank mit Mysql zu ersetzen. Zuerst wird das Setup erläutert, nachfolgend die Probleme dargestellt. 
+
+\subsection{Setup}
+
+Für das Persistieren der Kundendaten eignet sich die Openshift Mysql Projekt-Vorlage. Dazu haben wir die Default-Einstellung fürs Erstellen eines solchen Projektes verwendet, bis auf den DB-Namen, den wir auf \texttt{customer\_core} gesetzt haben. 
+
+Um die Spring-Applikationen nun mit dieser Datenbank zu verbinden, müssen wir zuerst den Connection String zusammenbauen. Dazu gibt es folgendes zu beachten: Openshift deployt das Mysql-Image in einem separaten Netzwerk, welches zunächst nicht vom Internet her zugreifbar ist. Es gibt zwei Möglichkeiten, dennoch Zugriff darauf zu bekommen. Entweder die zugreifende Spring Applikation muss in das selbe Netzwerk deployt werden, oder wir müssen zusätzlich eine Route konfigurieren, sodass vom Internet her auf die Datenbank zugegriffen werden kann. 
+
+Wir haben die zweite Möglichkeit ausprobiert und folgende URL herausgefunden:
+\begin{lstlisting}
+spring.datasource.url = jdbc:mysql://
+ persistence-route-customer-core-persistence.e4ff.
+ 5pro-eu-west-1.openshiftapps.com:3306/customer_core
+\end{lstlisting}
+Zusätzlich muss noch eine Dependency für den Mysql-Connector in das \texttt{pom.xml} hinzugefügt und den h2 Treiber aus der Konfiguration genommen werden (Zeile mit \texttt{driver\-ClassName} in \texttt{application.properties} auskommentieren). 
+
+Beim Deployment dieser Änderungen zeigten uns die Logdaten eine \texttt{Com\-munications\-Exception}. Nach etwas Recherche fiel auf, dass der Persistence Container ständig eine Fehlermeldung logt:
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\linewidth]{img/os-persistence-error}
+	\caption{Fehlermeldung Persistence Container}
+	\label{fig:os-persistence-error}
+\end{figure}
+
+Die Vermutung ist, dass uns dieser Fehler daran hindert, auf die Datenbank in der Cloud zuzugreifen. 
+ 
+Im Umfang dieses Assessment konnte die Ursache dieses Problems nicht gefunden werden, aber im folgenden Kapitel werden die getroffenen Massnahmen dargestellt.
+
+\subsection{Herausforderungen}
+Für die Fehlerbehandlung des in \ref{fig:os-persistence-error} dargestellten Fehlers schlagen einige Entwickler online vor, den Wert der Mysql-Umgebungsvariable \texttt{max\_allowed\_packet} zu erhöhen. Dies wurde durch verschiedene Ansätze probiert, der funktionierende Weg wurde aber in der Openshift-Dokumentation gefunden.  \footnote{\url{https://docs.openshift.com/container-platform/3.3/using\_images/db\_images/mysql.html\#mysql-environment-variables}}
+Der Wert dieser Variable (und Umgebungsvariablen allgemein) kann in der Openshift Console unter Applications $\rightarrow$ Deployments $\rightarrow$ Environment gesetzt werden. Mit dem Kommandozeilentool \texttt{oc} kann weiter auf die Mysql Instanz per remote Shell zugegriffen werden und die Umgebungsvariablen mittels 
+\begin{lstlisting}
+show variables;
+\end{lstlisting}
+abgefragt werden. Die Updates können so beobachtet werden, jedoch scheint dies keine Wirkung auf das Problem zu haben. Es werden auch dann noch im 10-Sekunden-Takt diese Logmeldungen ausgegeben. 
+
+Diese generische Fehlermeldung machte es uns schwierig, das genaue Problem zu entdecken und konnten es deshalb nicht beheben.
+
 
 
 \section{Twelve-Factor Apps - Engineering Projekt}
